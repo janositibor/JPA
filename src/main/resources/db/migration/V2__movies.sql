@@ -1,0 +1,1 @@
+create table movies(id bigint auto_increment, title varchar(255), release_date date, primary key(id));

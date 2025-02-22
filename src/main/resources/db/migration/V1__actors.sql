@@ -1,0 +1,1 @@
+create table actors(id bigint auto_increment, name varchar(255), yob int, primary key(id));
