@@ -1,5 +1,6 @@
 package repository;
 
+import model.Actor;
 import model.Movie;
 
 import javax.persistence.EntityManager;
@@ -49,6 +50,17 @@ public class MovieRepository{
             em.close();
         }
 
+    }
+    public void update(Movie movie){
+        EntityManager em=entityManagerFactory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            movie.setTitle("merged");
+            em.merge(movie);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
     public void setRatings(Long id, List<Integer> ratings){
         for (Integer rating : ratings) {

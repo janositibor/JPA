@@ -1,6 +1,7 @@
 package model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,7 +16,7 @@ public class Actor {
     @JoinTable(name="actors_movies",
             joinColumns=@JoinColumn(name="actor_id"),
             inverseJoinColumns=@JoinColumn(name="movie_id"))
-    private List<Movie> movies;
+    private List<Movie> movies=new ArrayList<>();
 
     public Actor() {
     }
@@ -37,6 +38,9 @@ public class Actor {
 
     public void setMovies(List<Movie> movies) {
         this.movies = movies;
+    }
+    public void addMovies(Movie movie) {
+        this.movies.add(movie);
     }
 
     public long getId() {

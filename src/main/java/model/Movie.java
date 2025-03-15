@@ -36,6 +36,9 @@ public class Movie {
     public void setActors(List<Actor> actors) {
         this.actors = actors;
     }
+    public void addActors(Actor actor) {
+        this.actors.add(actor);
+    }
 
     public void setNumberOfRatings(int numberOfRatings) {
         this.numberOfRatings = numberOfRatings;
@@ -67,6 +70,10 @@ public class Movie {
 
     public void setRatings(List<Integer> ratings) {
         this.ratings = ratings;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @Override

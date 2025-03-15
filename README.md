@@ -1,4 +1,4 @@
-# JDBC Template
+# JPA
 ## Purpose
 This project is a simple example to demonstrate the abilities of JPA.
 In memory H2 and MariaDB are used as a database.

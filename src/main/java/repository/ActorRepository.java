@@ -73,8 +73,19 @@ public class ActorRepository{
         }finally {
             em.close();
         }
-
     }
+    
+    public void update(Actor actor){
+        EntityManager em=entityManagerFactory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(actor);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+    
 
     public List<Actor> findAllActor(){
         EntityManager em = entityManagerFactory.createEntityManager();
