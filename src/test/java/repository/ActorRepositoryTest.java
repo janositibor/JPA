@@ -19,8 +19,8 @@ class ActorRepositoryTest {
 
     @BeforeEach
     void init() {
-        factory = Persistence.createEntityManagerFactory("MariaDB-pu");
-//        factory = Persistence.createEntityManagerFactory("H2-pu");
+//        factory = Persistence.createEntityManagerFactory("MariaDB-pu");
+        factory = Persistence.createEntityManagerFactory("H2-pu");
         actorRepository = new ActorRepository(factory);
     }
 

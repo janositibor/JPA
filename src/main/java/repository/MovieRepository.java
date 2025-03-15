@@ -1,6 +1,5 @@
 package repository;
 
-import model.Actor;
 import model.Movie;
 
 import javax.persistence.EntityManager;
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MovieRepository{
+public class MovieRepository {
     private EntityManagerFactory entityManagerFactory;
 
     public MovieRepository(EntityManagerFactory entityManagerFactory) {
@@ -19,7 +18,7 @@ public class MovieRepository{
     }
 
     public Movie save(Movie movie) {
-        EntityManager em=entityManagerFactory.createEntityManager();
+        EntityManager em = entityManagerFactory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(movie);
@@ -29,49 +28,52 @@ public class MovieRepository{
         }
         return movie;
     }
+
     public Optional<Movie> find(Movie movie) {
-        EntityManager em=entityManagerFactory.createEntityManager();
-        String jpqlString="SELECT m FROM Movie m WHERE m.title=:title AND m.releaseDate=:releaseDate";
-        TypedQuery<Movie> query=em.createQuery(jpqlString, Movie.class);
-        query.setParameter("title",movie.getTitle());
-        query.setParameter("releaseDate",movie.getReleaseDate());
-        try{
+        EntityManager em = entityManagerFactory.createEntityManager();
+        String jpqlString = "SELECT m FROM Movie m WHERE m.title=:title AND m.releaseDate=:releaseDate";
+        TypedQuery<Movie> query = em.createQuery(jpqlString, Movie.class);
+        query.setParameter("title", movie.getTitle());
+        query.setParameter("releaseDate", movie.getReleaseDate());
+        try {
             return Optional.of(query.getSingleResult());
-        }catch (NoResultException nre){
+        } catch (NoResultException nre) {
             return Optional.empty();
         }
     }
-    public Optional<Movie> findById(Long id){
-        EntityManager em=entityManagerFactory.createEntityManager();
-        try{
-            Movie movie=em.find(Movie.class,id);
+
+    public Optional<Movie> findById(Long id) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            Movie movie = em.find(Movie.class, id);
             return Optional.ofNullable(movie);
-        }finally {
+        } finally {
             em.close();
         }
 
     }
-    public void update(Movie movie){
-        EntityManager em=entityManagerFactory.createEntityManager();
+
+    public void update(Movie movie) {
+        EntityManager em = entityManagerFactory.createEntityManager();
         try {
             em.getTransaction().begin();
-            movie.setTitle("merged");
             em.merge(movie);
             em.getTransaction().commit();
         } finally {
             em.close();
         }
     }
-    public void setRatings(Long id, List<Integer> ratings){
+
+    public void setRatings(Long id, List<Integer> ratings) {
         for (Integer rating : ratings) {
             if (rating > 10) {
                 throw new IllegalStateException("Invalid rating: " + rating);
             }
         }
-        EntityManager em=entityManagerFactory.createEntityManager();
-        try{
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
             em.getTransaction().begin();
-            Movie movie=em.find(Movie.class,id);
+            Movie movie = em.find(Movie.class, id);
             movie.setRatings(ratings);
             em.getTransaction().commit();
             System.out.println("Done!");
@@ -80,19 +82,18 @@ public class MovieRepository{
         }
     }
 
-    public Optional<Movie> findMovieWithRatings(Long id){
-        EntityManager em=entityManagerFactory.createEntityManager();
-        try{
-            Movie movie=em.createQuery("SELECT m FROM Movie m LEFT JOIN FETCH m.ratings WHERE id=:id", Movie.class)
-                    .setParameter("id",id)
+    public Optional<Movie> findMovieWithRatings(Long id) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            Movie movie = em.createQuery("SELECT m FROM Movie m LEFT JOIN FETCH m.ratings WHERE id=:id", Movie.class)
+                    .setParameter("id", id)
                     .getSingleResult();
             movie.setNumberOfRatings(movie.getRatings().size());
-            movie.setAverageOfRatings(movie.getRatings().stream().collect(Collectors.averagingInt(x->x.intValue())));
+            movie.setAverageOfRatings(movie.getRatings().stream().collect(Collectors.averagingInt(x -> x.intValue())));
             return Optional.of(movie);
-        }catch (NoResultException nre){
+        } catch (NoResultException nre) {
             return Optional.empty();
-        }
-        finally {
+        } finally {
             em.close();
         }
     }

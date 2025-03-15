@@ -13,9 +13,9 @@ public class Movie {
     private String title;
     private LocalDate releaseDate;
     @ManyToMany(mappedBy = "movies")
-    private List<Actor> actors=new ArrayList<>();
+    private List<Actor> actors = new ArrayList<>();
     @ElementCollection
-    private List<Integer> ratings=new ArrayList<>();
+    private List<Integer> ratings = new ArrayList<>();
     private int numberOfRatings;
     private double averageOfRatings;
 
@@ -36,6 +36,7 @@ public class Movie {
     public void setActors(List<Actor> actors) {
         this.actors = actors;
     }
+
     public void addActors(Actor actor) {
         this.actors.add(actor);
     }

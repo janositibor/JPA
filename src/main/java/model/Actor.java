@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="actors")
+@Table(name = "actors")
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
+
     private int yob;
     @ManyToMany
-    @JoinTable(name="actors_movies",
-            joinColumns=@JoinColumn(name="actor_id"),
-            inverseJoinColumns=@JoinColumn(name="movie_id"))
-    private List<Movie> movies=new ArrayList<>();
+    @JoinTable(name = "actors_movies",
+            joinColumns = @JoinColumn(name = "actor_id"),
+            inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    private List<Movie> movies = new ArrayList<>();
 
     public Actor() {
     }
@@ -27,7 +28,7 @@ public class Actor {
     }
 
     public Actor(long id, String name, int yob) {
-        this(name,yob);
+        this(name, yob);
         this.id = id;
     }
 
@@ -39,6 +40,7 @@ public class Actor {
     public void setMovies(List<Movie> movies) {
         this.movies = movies;
     }
+
     public void addMovies(Movie movie) {
         this.movies.add(movie);
     }
