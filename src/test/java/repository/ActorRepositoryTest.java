@@ -2,10 +2,11 @@ package repository;
 
 import model.Actor;
 import org.assertj.core.groups.Tuple;
-import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,89 +14,115 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ActorRepositoryTest {
-    private DB db=new DB("testdb","sa","");
+    private EntityManagerFactory factory;
     private ActorRepository actorRepository;
+
     @BeforeEach
-    void init(){
-        Flyway flyway=Flyway.configure().dataSource(db.getDataSource()).load();
-        flyway.clean();
-        flyway.migrate();
-        actorRepository=new ActorRepository(db.getDataSource());
-    }
-    @Test
-    void saveTest(){
-        Actor actor1=new Actor("Scherer Peter",1961);
-        long id1=actorRepository.saveBasicAndGetGeneratedKey(actor1).get();
-        assertEquals(1L,id1);
-        Actor actor2=new Actor("Mucsi Zoltan",1957);
-        long id2=actorRepository.saveBasicAndGetGeneratedKey(actor2).get();
-        assertEquals(2L,id2);
+    void init() {
+        factory = Persistence.createEntityManagerFactory("MariaDB-pu");
+//        factory = Persistence.createEntityManagerFactory("H2-pu");
+        actorRepository = new ActorRepository(factory);
     }
 
     @Test
-    void findActorTest(){
-        Actor actor1=new Actor("Scherer Peter",1961);
-        long id1=actorRepository.saveBasicAndGetGeneratedKey(actor1).get();
-        Actor actor2=new Actor("Mucsi Zoltan",1957);
-        long id2=actorRepository.saveBasicAndGetGeneratedKey(actor2).get();
+    void saveTest() {
+        Actor actor1 = new Actor("Scherer Peter", 1961);
+        Actor actor2 = new Actor("Mucsi Zoltan", 1957);
 
-        Actor getActor2=actorRepository.findActor(actor2).get();
-        Actor getActor1=actorRepository.findActor(actor1).get();
-        assertEquals(2L,getActor2.getId());
-        assertEquals(1L,getActor1.getId());
+        long id1 = actorRepository.save(actor1).getId();
+        long id2 = actorRepository.save(actor2).getId();
+        assertEquals(1L, id1);
+        assertEquals(2L, id2);
     }
+
     @Test
-    void notFoundActor(){
-        Actor actor=new Actor("Mucsi Zoltan",1957);
-        Optional<Actor> getActor=actorRepository.findActor(actor);
+    void findActorTest() {
+        Actor actor1 = new Actor("Scherer Peter", 1961);
+        Actor actor2 = new Actor("Mucsi Zoltan", 1957);
+
+        long id1 = actorRepository.save(actor1).getId();
+        long id2 = actorRepository.save(actor2).getId();
+
+        Actor getActor2 = actorRepository.find(actor2).get();
+        Actor getActor1 = actorRepository.find(actor1).get();
+
+        assertEquals(id2, getActor2.getId());
+        assertEquals(id1, getActor1.getId());
+    }
+
+    @Test
+    void findActorByIdTest() {
+        Actor actor1 = new Actor("Scherer Peter", 1961);
+        Actor actor2 = new Actor("Mucsi Zoltan", 1957);
+
+        actorRepository.save(actor1);
+        actorRepository.save(actor2);
+
+        Actor getActor2 = actorRepository.findById(actor2.getId()).get();
+        Actor getActor1 = actorRepository.findById(actor1.getId()).get();
+
+        assertEquals(actor1.getName(), getActor1.getName());
+        assertEquals(actor2.getName(), getActor2.getName());
+        assertEquals(actor1.getYob(), getActor1.getYob());
+        assertEquals(actor2.getYob(), getActor2.getYob());
+    }
+
+    @Test
+    void notFoundActor() {
+        Actor actor = new Actor("Mucsi Zoltan", 1957);
+        Optional<Actor> getActor = actorRepository.find(actor);
         assertFalse(getActor.isPresent());
     }
-    @Test
-    void findAllActorTest(){
-        Actor actor1=new Actor("Scherer Peter",1961);
-        long id1=actorRepository.saveBasicAndGetGeneratedKey(actor1).get();
-        Actor actor2=new Actor("Mucsi Zoltan",1957);
-        long id2=actorRepository.saveBasicAndGetGeneratedKey(actor2).get();
 
-        List<Actor> actors=actorRepository.findAllActor();
+    @Test
+    void findAllActorTest() {
+        Actor actor1 = new Actor("Scherer Peter", 1961);
+        Actor actor2 = new Actor("Mucsi Zoltan", 1957);
+
+        actorRepository.save(actor1);
+        actorRepository.save(actor2);
+
+        List<Actor> actors = actorRepository.findAllActor();
         assertThat(actors)
                 .hasSize(2)
-                .extracting(Actor::getName,Actor::getYob)
-                .containsExactly(Tuple.tuple("Scherer Peter",1961),Tuple.tuple("Mucsi Zoltan",1957));
+                .extracting(Actor::getName, Actor::getYob)
+                .containsExactly(Tuple.tuple("Scherer Peter", 1961), Tuple.tuple("Mucsi Zoltan", 1957));
     }
-    @Test
-    void updateActorTest(){
-        Actor actor=new Actor("Scherer Peter",1960);
-        actorRepository.saveBasicAndGetGeneratedKey(actor).get();
-        Actor getActor=actorRepository.findActor(actor).get();
-        actorRepository.updateActor(getActor,new Actor("Scherer Péter",1961));
-        Actor getActor2=actorRepository.findActor(new Actor("Scherer Péter",1961)).get();
 
-        assertEquals(1L,getActor2.getId());
+    @Test
+    void updateActorTest() {
+        Actor actor = new Actor("Scherer Peter", 1960);
+        actorRepository.save(actor);
+        Actor getActor = actorRepository.find(actor).get();
+        actorRepository.update(getActor, new Actor("Scherer Péter", 1961));
+        Actor getActor2 = actorRepository.find(new Actor("Scherer Péter", 1961)).get();
+
+        assertEquals(actor.getId(), getActor2.getId());
         assertThat(getActor2)
-                .hasFieldOrPropertyWithValue("name","Scherer Péter")
-                .hasFieldOrPropertyWithValue("yob",1961);
+                .hasFieldOrPropertyWithValue("name", "Scherer Péter")
+                .hasFieldOrPropertyWithValue("yob", 1961);
     }
-    @Test
-    void deleteActorTest(){
-        Actor actor1=new Actor("Scherer Peter",1961);
-        long id1=actorRepository.saveBasicAndGetGeneratedKey(actor1).get();
-        Actor actor2=new Actor("Mucsi Zoltan",1957);
-        long id2=actorRepository.saveBasicAndGetGeneratedKey(actor2).get();
 
-        List<Actor> actors=actorRepository.findAllActor();
+    @Test
+    void deleteActorTest() {
+        Actor actor1 = new Actor("Scherer Peter", 1961);
+        Actor actor2 = new Actor("Mucsi Zoltan", 1957);
+
+        actorRepository.save(actor1);
+        actorRepository.save(actor2);
+
+        List<Actor> actors = actorRepository.findAllActor();
         assertThat(actors)
                 .hasSize(2)
-                .extracting(Actor::getName,Actor::getYob)
-                .containsExactly(Tuple.tuple("Scherer Peter",1961),Tuple.tuple("Mucsi Zoltan",1957));
+                .extracting(Actor::getName, Actor::getYob)
+                .containsExactly(Tuple.tuple("Scherer Peter", 1961), Tuple.tuple("Mucsi Zoltan", 1957));
 
-        Actor getActor1=actorRepository.findActor(actor1).get();
-        actorRepository.deleteActor(getActor1.getId());
+        actorRepository.delete(actor1.getId());
 
-        actors=actorRepository.findAllActor();
+        actors = actorRepository.findAllActor();
         assertThat(actors)
                 .hasSize(1)
-                .extracting(Actor::getName,Actor::getYob)
-                .containsExactly(Tuple.tuple("Mucsi Zoltan",1957));
+                .extracting(Actor::getName, Actor::getYob)
+                .containsExactly(Tuple.tuple("Mucsi Zoltan", 1957));
     }
 }

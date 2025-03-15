@@ -1,12 +1,24 @@
 package model;
 
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
+@Table(name="actors")
 public class Actor {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private int yob;
+    @ManyToMany
+    @JoinTable(name="actors_movies",
+            joinColumns=@JoinColumn(name="actor_id"),
+            inverseJoinColumns=@JoinColumn(name="movie_id"))
     private List<Movie> movies;
+
+    public Actor() {
+    }
 
     public Actor(String name, int yob) {
         this.name = name;
@@ -17,6 +29,7 @@ public class Actor {
         this(name,yob);
         this.id = id;
     }
+
 
     public List<Movie> getMovies() {
         return movies;
@@ -45,5 +58,13 @@ public class Actor {
                 ", name='" + name + '\'' +
                 ", yob=" + yob +
                 '}';
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setYob(int yob) {
+        this.yob = yob;
     }
 }

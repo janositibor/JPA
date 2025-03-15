@@ -1,58 +1,88 @@
 package repository;
 
-import model.MovieRowMapper;
 import model.Movie;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
-import javax.sql.DataSource;
-import java.sql.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MovieRepository{
-    private JdbcTemplate jdbcTemplate;
+    private EntityManagerFactory entityManagerFactory;
 
-    public MovieRepository(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
+    public MovieRepository(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
-    public Optional<Long> saveBasicAndGetGeneratedKey(Movie movie) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        Number key;
 
-        jdbcTemplate.update(new PreparedStatementCreator() {
-                                @Override
-                                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                                    PreparedStatement ps =
-                                            connection.prepareStatement("insert into movies(title,release_date) values (?,?)",
-                                                    Statement.RETURN_GENERATED_KEYS);
-                                    ps.setString(1, movie.getTitle());
-                                    ps.setDate(2, Date.valueOf(movie.getReleaseDate()));
-                                    return ps;
-                                }
-                            }, keyHolder
-        );
-
-        key=keyHolder.getKey();
-        if(key!=null){
-            return Optional.ofNullable(key.longValue());
+    public Movie save(Movie movie) {
+        EntityManager em=entityManagerFactory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(movie);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
         }
-        else{
-            throw new IllegalArgumentException("Error with movie saving!");
-        }
+        return movie;
     }
-    public Optional<Movie> findMovie(Movie movie) {
-        List<Movie> movies=jdbcTemplate.query("select movies.id AS id, movies.title AS title, movies.release_date AS release_date, COUNT(ratings.rating) AS number_of_ratings, AVG(ratings.rating) AS average_of_ratings from movies LEFT JOIN ratings ON movies.id=ratings.movie_id WHERE movies.title LIKE ? AND movies.release_date=? GROUP BY movies.id"
-                , new MovieRowMapper(true)
-                ,movie.getTitle(),Date.valueOf(movie.getReleaseDate()));
-        if(movies.isEmpty()){
+    public Optional<Movie> find(Movie movie) {
+        EntityManager em=entityManagerFactory.createEntityManager();
+        String jpqlString="SELECT m FROM Movie m WHERE m.title=:title AND m.releaseDate=:releaseDate";
+        TypedQuery<Movie> query=em.createQuery(jpqlString, Movie.class);
+        query.setParameter("title",movie.getTitle());
+        query.setParameter("releaseDate",movie.getReleaseDate());
+        try{
+            return Optional.of(query.getSingleResult());
+        }catch (NoResultException nre){
             return Optional.empty();
         }
-        return Optional.of(movies.get(0));
+    }
+    public Optional<Movie> findById(Long id){
+        EntityManager em=entityManagerFactory.createEntityManager();
+        try{
+            Movie movie=em.find(Movie.class,id);
+            return Optional.ofNullable(movie);
+        }finally {
+            em.close();
+        }
+
+    }
+    public void setRatings(Long id, List<Integer> ratings){
+        for (Integer rating : ratings) {
+            if (rating > 10) {
+                throw new IllegalStateException("Invalid rating: " + rating);
+            }
+        }
+        EntityManager em=entityManagerFactory.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            Movie movie=em.find(Movie.class,id);
+            movie.setRatings(ratings);
+            em.getTransaction().commit();
+            System.out.println("Done!");
+        } finally {
+            em.close();
+        }
     }
 
-
+    public Optional<Movie> findMovieWithRatings(Long id){
+        EntityManager em=entityManagerFactory.createEntityManager();
+        try{
+            Movie movie=em.createQuery("SELECT m FROM Movie m LEFT JOIN FETCH m.ratings WHERE id=:id", Movie.class)
+                    .setParameter("id",id)
+                    .getSingleResult();
+            movie.setNumberOfRatings(movie.getRatings().size());
+            movie.setAverageOfRatings(movie.getRatings().stream().collect(Collectors.averagingInt(x->x.intValue())));
+            return Optional.of(movie);
+        }catch (NoResultException nre){
+            return Optional.empty();
+        }
+        finally {
+            em.close();
+        }
+    }
 
 }

@@ -1,0 +1,31 @@
+<persistence version="2.0"
+             xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="MariaDB-pu"
+                      transaction-type="RESOURCE_LOCAL">
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="moviesUser"/>
+            <property name="javax.persistence.jdbc.password" value="moviesPass"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/movies"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDB10Dialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="H2-pu" transaction-type="RESOURCE_LOCAL">
+        <class>model.Actor</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <!-- Hibernate settings -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

@@ -1,15 +1,21 @@
 package model;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Movie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private LocalDate releaseDate;
+    @ManyToMany(mappedBy = "movies")
     private List<Actor> actors=new ArrayList<>();
-    private List<Integer> evaluation=new ArrayList<>();
+    @ElementCollection
+    private List<Integer> ratings=new ArrayList<>();
     private int numberOfRatings;
     private double averageOfRatings;
 
@@ -22,6 +28,9 @@ public class Movie {
         this.id = id;
         this.title = title;
         this.releaseDate = releaseDate;
+    }
+
+    public Movie() {
     }
 
     public void setActors(List<Actor> actors) {
@@ -52,8 +61,12 @@ public class Movie {
         return actors;
     }
 
-    public List<Integer> getEvaluation() {
-        return evaluation;
+    public List<Integer> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Integer> ratings) {
+        this.ratings = ratings;
     }
 
     @Override
@@ -63,13 +76,5 @@ public class Movie {
                 ", title='" + title + '\'' +
                 ", releaseDate=" + releaseDate +
                 '}';
-    }
-
-    public int getNumberOfRatings() {
-        return numberOfRatings;
-    }
-
-    public double getAverageOfRatings() {
-        return averageOfRatings;
     }
 }
