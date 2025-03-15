@@ -20,7 +20,8 @@ class ServiceTest {
 
     @BeforeEach
     void init() {
-        factory = Persistence.createEntityManagerFactory("MariaDB-pu");
+//        factory = Persistence.createEntityManagerFactory("MariaDB-pu");
+        factory = Persistence.createEntityManagerFactory("H2-pu");
         service = new Service(factory);
     }
 
