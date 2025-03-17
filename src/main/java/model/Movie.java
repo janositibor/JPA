@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name="movies")
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +19,9 @@ public class Movie {
     private List<Integer> ratings = new ArrayList<>();
     private int numberOfRatings;
     private double averageOfRatings;
-
+    @ElementCollection
+    @CollectionTable(name="shows", joinColumns = @JoinColumn(name="movie_id"))
+    private List<Show> shows=new ArrayList<>();
     public Movie(String title, LocalDate releaseDate) {
         this.title = title;
         this.releaseDate = releaseDate;
@@ -31,6 +34,9 @@ public class Movie {
     }
 
     public Movie() {
+    }
+    public void addShow(Show show){
+        shows.add(show);
     }
 
     public void setActors(List<Actor> actors) {
@@ -75,6 +81,14 @@ public class Movie {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setShows(List<Show> shows) {
+        this.shows = shows;
+    }
+
+    public List<Show> getShows() {
+        return shows;
     }
 
     @Override
