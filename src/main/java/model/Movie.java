@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="movies")
+@Table(name = "movies")
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +20,12 @@ public class Movie {
     private int numberOfRatings;
     private double averageOfRatings;
     @ElementCollection
-    @CollectionTable(name="shows", joinColumns = @JoinColumn(name="movie_id"))
-    private List<Show> shows=new ArrayList<>();
+    @CollectionTable(name = "shows", joinColumns = @JoinColumn(name = "movie_id"))
+    private List<Show> shows = new ArrayList<>();
+    //    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    private List<Scene> scenes = new ArrayList<>();
+
     public Movie(String title, LocalDate releaseDate) {
         this.title = title;
         this.releaseDate = releaseDate;
@@ -35,7 +39,13 @@ public class Movie {
 
     public Movie() {
     }
-    public void addShow(Show show){
+
+    public void addScene(Scene scene) {
+        scenes.add(scene);
+        scene.setMovie(this);
+    }
+
+    public void addShow(Show show) {
         shows.add(show);
     }
 
@@ -91,6 +101,10 @@ public class Movie {
         return shows;
     }
 
+    public List<Scene> getScenes() {
+        return scenes;
+    }
+
     @Override
     public String toString() {
         return "Movie{" +
@@ -98,5 +112,12 @@ public class Movie {
                 ", title='" + title + '\'' +
                 ", releaseDate=" + releaseDate +
                 '}';
+    }
+
+    public void defineScenes(List<Scene> scenes) {
+        this.scenes.clear();
+        for (Scene scene : scenes) {
+            addScene(scene);
+        }
     }
 }

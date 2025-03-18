@@ -22,7 +22,11 @@ public class MovieRepository {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(movie);
+            if (movie.getId() == null) {
+                em.persist(movie);
+            } else {
+                em.merge(movie);
+            }
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -48,18 +52,6 @@ public class MovieRepository {
         try {
             Movie movie = em.find(Movie.class, id);
             return Optional.ofNullable(movie);
-        } finally {
-            em.close();
-        }
-
-    }
-
-    public void update(Movie movie) {
-        EntityManager em = entityManagerFactory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(movie);
-            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -97,6 +89,7 @@ public class MovieRepository {
             em.close();
         }
     }
+
     public void setShows(Long id, List<Show> shows) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
@@ -108,6 +101,7 @@ public class MovieRepository {
             em.close();
         }
     }
+
     public void addShow(Long id, Show show) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
@@ -119,10 +113,25 @@ public class MovieRepository {
             em.close();
         }
     }
+
     public Optional<Movie> findMovieWithShows(Long id) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             Movie movie = em.createQuery("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.shows WHERE m.id=:id", Movie.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+            return Optional.of(movie);
+        } catch (NoResultException nre) {
+            return Optional.empty();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<Movie> findMovieWithScenes(Long id) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            Movie movie = em.createQuery("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.scenes WHERE m.id=:id", Movie.class)
                     .setParameter("id", id)
                     .getSingleResult();
             return Optional.of(movie);
