@@ -96,7 +96,7 @@ class ActorRepositoryTest {
         Actor getActor = actorRepository.find(actor).get();
         getActor.setYob(1960);
         getActor.setName("Scherer Péter");
-        actorRepository.update(getActor);
+        actorRepository.save(getActor);
         Actor getActor2 = actorRepository.find(new Actor("Scherer Péter", 1960)).get();
 
         assertEquals(actor.getId(), getActor2.getId());

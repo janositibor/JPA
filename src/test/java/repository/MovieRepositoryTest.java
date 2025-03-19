@@ -37,7 +37,6 @@ class MovieRepositoryTest {
         assertEquals(2L, id2);
         long id3 = movie3.getId();
         assertEquals(3L, id3);
-
     }
 
     @Test

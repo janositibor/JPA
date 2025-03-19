@@ -13,7 +13,10 @@ public class Movie {
     private Long id;
     private String title;
     private LocalDate releaseDate;
-    @ManyToMany(mappedBy = "movies")
+    @ManyToMany
+    @JoinTable(name = "actors_movies",
+            joinColumns = @JoinColumn(name = "actor_id"),
+            inverseJoinColumns = @JoinColumn(name = "movie_id"))
     private List<Actor> actors = new ArrayList<>();
     @ElementCollection
     private List<Integer> ratings = new ArrayList<>();
@@ -52,7 +55,7 @@ public class Movie {
         this.actors = actors;
     }
 
-    public void addActors(Actor actor) {
+    public void addActor(Actor actor) {
         this.actors.add(actor);
     }
 

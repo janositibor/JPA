@@ -20,7 +20,11 @@ public class ActorRepository {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(actor);
+            if (actor.getId() == null) {
+                em.persist(actor);
+            } else {
+                em.merge(actor);
+            }
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -61,20 +65,7 @@ public class ActorRepository {
             em.close();
         }
     }
-
-    public void update(Actor actor) {
-        EntityManager em = entityManagerFactory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(actor);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-
-
-    public List<Actor> findAllActor() {
+  public List<Actor> findAllActor() {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             return em.createQuery("select a from Actor a order by a.id", Actor.class).getResultList();

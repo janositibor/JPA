@@ -9,13 +9,10 @@ import java.util.List;
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private int yob;
-    @ManyToMany
-    @JoinTable(name = "actors_movies",
-            joinColumns = @JoinColumn(name = "actor_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    @ManyToMany(mappedBy = "actors")
     private List<Movie> movies = new ArrayList<>();
 
     public Actor() {
@@ -26,7 +23,7 @@ public class Actor {
         this.yob = yob;
     }
 
-    public Actor(long id, String name, int yob) {
+    public Actor(Long id, String name, int yob) {
         this(name, yob);
         this.id = id;
     }
@@ -44,7 +41,7 @@ public class Actor {
         this.movies.add(movie);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

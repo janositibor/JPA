@@ -43,11 +43,11 @@ class ActorMovieRepositoryTest {
         actorRepository.save(actor1);
         actorRepository.save(actor2);
 
-        actor1.addMovies(movie2);
-        actor2.setMovies(List.of(movie1, movie2));
+        movie1.addActor(actor2);
+        movie2.setActors(List.of(actor1,actor2));
 
-        actorRepository.update(actor1);
-        actorRepository.update(actor2);
+        movieRepository.save(movie1);
+        movieRepository.save(movie2);
 
         Actor getActor1 = actorMovieRepository.findActorByIdWithMovies(actor1.getId()).get();
         Actor getActor2 = actorMovieRepository.findActorByIdWithMovies(actor2.getId()).get();

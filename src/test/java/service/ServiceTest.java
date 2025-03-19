@@ -46,7 +46,7 @@ class ServiceTest {
         service.saveActor("Scherer Péter", 1961);
         service.saveActor("Mucsi Zoltán", 1957);
         IllegalArgumentException iae = assertThrows(IllegalArgumentException.class, () -> service.findActor(new Actor("Schererr Péter", 1961)));
-        assertEquals("No actor found: Actor{id=0, name='Schererr Péter', yob=1961}", iae.getMessage());
+        assertEquals("No actor found: Actor{id=null, name='Schererr Péter', yob=1961}", iae.getMessage());
 
     }
 

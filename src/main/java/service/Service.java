@@ -6,6 +6,7 @@ import model.Movie;
 
 import javax.persistence.EntityManagerFactory;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,13 +74,12 @@ public class Service {
 
     public void saveMovieWithActors(String title, LocalDate releaseDate, List<Actor> actors) {
         Movie movie = saveMovie(title, releaseDate);
+        List<Actor> actorsToSet=new ArrayList<>();
         for (Actor actorToCheck : actors) {
-            if (!containsActor(actorToCheck)) {
-                saveActor(actorToCheck.getName(), actorToCheck.getYob());
-            }
-            Actor actor = actorRepository.find(actorToCheck).orElseThrow(() -> new IllegalStateException("Can't found actor!"));
-            actor.addMovies(movie);
-            actorRepository.update(actor);
+            Actor actor = actorRepository.save(actorToCheck);
+            actorsToSet.add(actor);
         }
+        movie.setActors(actorsToSet);
+        movieRepository.save(movie);
     }
 }
