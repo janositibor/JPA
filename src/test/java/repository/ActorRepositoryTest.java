@@ -91,16 +91,18 @@ class ActorRepositoryTest {
 
     @Test
     void updateActorTest() {
-        Actor actor = new Actor("Scherer Peter", 1960);
+        Actor actor = new Actor("Scherer Peter", 1961);
         actorRepository.save(actor);
         Actor getActor = actorRepository.find(actor).get();
-        actorRepository.update(getActor, new Actor("Scherer Péter", 1961));
-        Actor getActor2 = actorRepository.find(new Actor("Scherer Péter", 1961)).get();
+        getActor.setYob(1960);
+        getActor.setName("Scherer Péter");
+        actorRepository.update(getActor);
+        Actor getActor2 = actorRepository.find(new Actor("Scherer Péter", 1960)).get();
 
         assertEquals(actor.getId(), getActor2.getId());
         assertThat(getActor2)
                 .hasFieldOrPropertyWithValue("name", "Scherer Péter")
-                .hasFieldOrPropertyWithValue("yob", 1961);
+                .hasFieldOrPropertyWithValue("yob", 1960);
     }
 
     @Test

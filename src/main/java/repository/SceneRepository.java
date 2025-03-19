@@ -19,7 +19,11 @@ public class SceneRepository {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(scene);
+            if (scene.getId() == null) {
+                em.persist(scene);
+            } else {
+                em.merge(scene);
+            }
             em.getTransaction().commit();
         } finally {
             em.close();

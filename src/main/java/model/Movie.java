@@ -22,8 +22,7 @@ public class Movie {
     @ElementCollection
     @CollectionTable(name = "shows", joinColumns = @JoinColumn(name = "movie_id"))
     private List<Show> shows = new ArrayList<>();
-    //    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "movie")
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "movie")
     private List<Scene> scenes = new ArrayList<>();
 
     public Movie(String title, LocalDate releaseDate) {

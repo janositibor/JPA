@@ -27,21 +27,6 @@ public class ActorRepository {
         }
         return actor;
     }
-
-    public void update(Actor actorToUpdate, Actor pattern) {
-        EntityManager em = entityManagerFactory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Actor actor = em.find(Actor.class, actorToUpdate.getId());
-            actor.setName(pattern.getName());
-            actor.setYob(pattern.getYob());
-            em.getTransaction().commit();
-
-        } finally {
-            em.close();
-        }
-    }
-
     public void delete(Long id) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {

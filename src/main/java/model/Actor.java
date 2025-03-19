@@ -11,7 +11,6 @@ public class Actor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-
     private int yob;
     @ManyToMany
     @JoinTable(name = "actors_movies",

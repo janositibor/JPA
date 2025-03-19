@@ -12,7 +12,7 @@ public class Scene {
     private String description;
     private int length;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
