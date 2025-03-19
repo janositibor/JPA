@@ -33,12 +33,16 @@ public class Actor {
         return movies;
     }
 
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
+    public void defineMovies(List<Movie> movies) {
+        this.movies.clear();
+        for (Movie movie:movies) {
+            addMovie(movie);
+        }
     }
 
-    public void addMovies(Movie movie) {
-        this.movies.add(movie);
+    public void addMovie(Movie movie) {
+        movies.add(movie);
+        movie.addActor(this);
     }
 
     public Long getId() {

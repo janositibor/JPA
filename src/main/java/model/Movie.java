@@ -56,7 +56,7 @@ public class Movie {
     }
 
     public void addActor(Actor actor) {
-        this.actors.add(actor);
+        actors.add(actor);
     }
 
     public void setNumberOfRatings(int numberOfRatings) {
