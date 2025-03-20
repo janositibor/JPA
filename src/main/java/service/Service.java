@@ -76,7 +76,13 @@ public class Service {
         Movie movie = saveMovie(title, releaseDate);
         List<Actor> actorsToSet=new ArrayList<>();
         for (Actor actorToCheck : actors) {
-            Actor actor = actorRepository.save(actorToCheck);
+            Actor actor;
+            if(!containsActor(actorToCheck)) {
+                actor = actorRepository.save(actorToCheck);
+            }
+            else {
+                actor=findActor(actorToCheck);
+            }
             actorsToSet.add(actor);
         }
         movie.setActors(actorsToSet);

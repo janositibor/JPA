@@ -80,6 +80,23 @@ class ServiceTest {
     }
 
     @Test
+    void saveMovieWithAlreadySavedAndNewActorsTest() {
+        Actor actor1 = service.saveActor("Scherer Péter", 1961);
+        Actor actor2 = new Actor("Mucsi Zoltán", 1957);
+        Actor actor3 = new Actor("Scherer Péter", 1961);
+        service.saveMovieWithActors("Papírkutyák", LocalDate.of(2008, 10, 30), List.of(actor3, actor2));
+
+        Movie movie = service.findMovie(new Movie("Papírkutyák", LocalDate.of(2008, 10, 30)));
+
+        List<Actor> actors = movie.getActors();
+        assertThat(actors)
+                .extracting(Actor::getName, Actor::getYob)
+                .containsExactly(new Tuple("Scherer Péter", 1961), new Tuple("Mucsi Zoltán", 1957));
+        assertThat(service.findAllActor())
+                .hasSize(2);
+    }
+
+    @Test
     void actorsMoviesTest() {
         Actor actor1 = new Actor("Scherer Péter", 1961);
         Actor actor2 = new Actor("Mucsi Zoltán", 1957);
