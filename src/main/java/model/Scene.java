@@ -11,7 +11,6 @@ public class Scene {
     private String title;
     private String description;
     private int length;
-
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
