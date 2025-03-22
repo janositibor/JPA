@@ -15,7 +15,6 @@
         </properties>
     </persistence-unit>
     <persistence-unit name="H2-pu" transaction-type="RESOURCE_LOCAL">
-        <class>model.Actor</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"/>
