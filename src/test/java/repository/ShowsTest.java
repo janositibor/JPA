@@ -2,6 +2,7 @@ package repository;
 
 import model.Movie;
 import model.Show;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +25,10 @@ public class ShowsTest {
 //        factory = Persistence.createEntityManagerFactory("MariaDB-pu");
         factory = Persistence.createEntityManagerFactory("H2-pu");
         movieRepository = new MovieRepository(factory);
+    }
+    @AfterEach
+    void close(){
+        factory.close();
     }
 
     @Test

@@ -2,6 +2,7 @@ package repository;
 
 import model.Actor;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,10 @@ class ActorRepositoryTest {
         factory = Persistence.createEntityManagerFactory("H2-pu");
         actorRepository = new ActorRepository(factory);
     }
-
+    @AfterEach
+    void close(){
+        factory.close();
+    }
     @Test
     void saveTest() {
         Actor actor1 = new Actor("Scherer Peter", 1961);

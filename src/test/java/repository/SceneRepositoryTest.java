@@ -2,6 +2,7 @@ package repository;
 
 import model.Movie;
 import model.Scene;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,10 @@ class SceneRepositoryTest {
         factory = Persistence.createEntityManagerFactory("H2-pu");
         sceneRepository = new SceneRepository(factory);
         movieRepository = new MovieRepository(factory);
-
+    }
+    @AfterEach
+    void close(){
+        factory.close();
     }
 
     @Test

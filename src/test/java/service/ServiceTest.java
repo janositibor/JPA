@@ -3,6 +3,7 @@ package service;
 import model.Actor;
 import model.Movie;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,10 @@ class ServiceTest {
 //        factory = Persistence.createEntityManagerFactory("MariaDB-pu");
         factory = Persistence.createEntityManagerFactory("H2-pu");
         service = new Service(factory);
+    }
+    @AfterEach
+    void close(){
+        factory.close();
     }
 
     @Test

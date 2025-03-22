@@ -109,7 +109,7 @@ public class SceneRepository {
     public List<Scene> findScenesFromMovieWithTheMostScenes(){
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
-            return em.createQuery("SELECT s FROM Scene s WHERE s.movie=(SELECT m FROM Movie m WHERE SIZE(m.scenes)=(SELECT MAX(SIZE(m2.scenes)) FROM Movie m2)) ORDER BY s.id", Scene.class)
+            return em.createQuery("SELECT s FROM Scene s WHERE SIZE(s.movie.scenes)=(SELECT MAX(SIZE(m.scenes)) FROM Movie m) ORDER BY s.id", Scene.class)
                     .getResultList();
         } finally {
             em.close();
@@ -119,7 +119,7 @@ public class SceneRepository {
     public Movie findMovieWithSceneTitle(String sceneTitle){
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
-            return em.createQuery("SELECT m FROM Movie m WHERE m = (SELECT s.movie FROM Scene s WHERE s.title=:sceneTitle)", Movie.class)
+            return em.createQuery("SELECT s.movie FROM Scene s WHERE s.title=:sceneTitle", Movie.class)
                     .setParameter("sceneTitle",sceneTitle)
                     .getSingleResult();
         } finally {

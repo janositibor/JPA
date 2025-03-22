@@ -3,6 +3,7 @@ package repository;
 import model.Actor;
 import model.Movie;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,10 @@ class ActorMovieRepositoryTest {
         actorRepository = new ActorRepository(factory);
         movieRepository = new MovieRepository(factory);
         actorMovieRepository = new ActorMovieRepository(factory);
+    }
+    @AfterEach
+    void close(){
+        factory.close();
     }
 
     @Test
